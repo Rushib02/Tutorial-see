@@ -1,0 +1,108 @@
+#include <iostream>
+
+class CircularQueue {
+private:
+    static const int MAX_SIZE = 5;
+    int queueArray[MAX_SIZE];
+    int front, rear;
+
+public:
+    CircularQueue() : front(-1), rear(-1) {}
+
+    // Function to check if the circular queue is empty
+    bool isEmpty() {
+        return front == -1 && rear == -1;
+    }
+
+    // Function to check if the circular queue is full
+    bool isFull() {
+        return (rear + 1) % MAX_SIZE == front;
+    }
+
+    // Function to enqueue an element to the circular queue
+    void enqueue(int element) {
+        if (isFull()) {
+            std::cout << "Circular Queue is full. Cannot enqueue.\n";
+            return;
+        }
+
+        if (isEmpty()) {
+            front = rear = 0;
+        } else {
+            rear = (rear + 1) % MAX_SIZE;
+        }
+
+        queueArray[rear] = element;
+        std::cout << "Enqueued element: " << element << std::endl;
+    }
+
+    // Function to dequeue an element from the circular queue
+    void dequeue() {
+        if (isEmpty()) {
+            std::cout << "Circular Queue is empty. Cannot dequeue.\n";
+            return;
+        }
+
+        if (front == rear) {
+            // Last element in the circular queue
+            front = rear = -1;
+        } else {
+            front = (front + 1) % MAX_SIZE;
+        }
+
+        std::cout << "Dequeued element.\n";
+    }
+
+    // Function to display the elements in the circular queue
+    void displayQueue() {
+        if (isEmpty()) {
+            std::cout << "Circular Queue is empty.\n";
+            return;
+        }
+
+        std::cout << "Elements in the Circular Queue: ";
+        int i = front;
+        do {
+            std::cout << queueArray[i] << " ";
+            i = (i + 1) % MAX_SIZE;
+        } while (i != (rear + 1) % MAX_SIZE);
+
+        std::cout << std::endl;
+    }
+};
+
+int main() {
+    CircularQueue circularQueue;
+    int choice, element;
+
+    do {
+        std::cout << "\nCircular Queue Simulation Menu:\n";
+        std::cout << "1. Enqueue\n";
+        std::cout << "2. Dequeue\n";
+        std::cout << "3. Display Circular Queue\n";
+        std::cout << "4. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                std::cout << "Enter the element to enqueue: ";
+                std::cin >> element;
+                circularQueue.enqueue(element);
+                break;
+            case 2:
+                circularQueue.dequeue();
+                break;
+            case 3:
+                circularQueue.displayQueue();
+                break;
+            case 4:
+                std::cout << "Exiting program.\n";
+                break;
+            default:
+                std::cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}

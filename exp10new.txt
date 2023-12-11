@@ -1,0 +1,47 @@
+#include <iostream>
+#include <stack>
+
+// Function to check whether the expression is well-parenthesized
+bool isWellParenthesized(const std::string& expression) {
+    std::stack<char> charStack;
+
+    for (char ch : expression) {
+        if (ch == '(' || ch == '{' || ch == '[') {
+            charStack.push(ch);
+        } else if (ch == ')' || ch == '}' || ch == ']') {
+            if (charStack.empty()) {
+                return false; // Closing parenthesis without matching opening parenthesis
+            }
+
+            char top = charStack.top();
+            charStack.pop();
+
+            // Check if the closing parenthesis matches the corresponding opening parenthesis
+            if ((ch == ')' && top != '(') ||
+                (ch == '}' && top != '{') ||
+                (ch == ']' && top != '[')) {
+                return false;
+            }
+        }
+    }
+
+    // Expression is well-parenthesized if the stack is empty at the end
+    return charStack.empty();
+}
+
+int main() {
+    std::string inputExpression;
+
+    // Input expression from the user
+    std::cout << "Enter an expression: ";
+    std::getline(std::cin, inputExpression);
+
+    // Check whether the expression is well-parenthesized
+    if (isWellParenthesized(inputExpression)) {
+        std::cout << "The entered expression is well-parenthesized." << std::endl;
+    } else {
+        std::cout << "The entered expression is not well-parenthesized." << std::endl;
+    }
+
+    return 0;
+}
