@@ -1,93 +1,47 @@
-/* In any language program mostly syntax error occurs due to unbalancing delimiter such as
-(),{},[]. Write C++ program using stack to check whether given expression is well parenthesized or not.
-*/
-#include<iostream.h>
-#define size 10
-class stackexp
-{
-    int top;
-    char stk[size];
-public:
-    stackexp()
-    {
-     top=-1;
-    }
-    void push(char);
-    char pop();
-    int isfull();
-    int isempty();
-};
+#include <iostream>
+#include <stack>
 
-void stackexp::push(char x)
-{
-    top=top+1;
-    stk[top]=x;
+// Function to check whether the expression is well-parenthesized
+bool isWellParenthesized(const std::string& expression) {
+    std::stack<char> charStack;
+
+    for (char ch : expression) {
+        if (ch == '(' || ch == '{' || ch == '[') {
+            charStack.push(ch);
+        } else if (ch == ')' || ch == '}' || ch == ']') {
+            if (charStack.empty()) {
+                return false; // Closing parenthesis without matching opening parenthesis
+            }
+
+            char top = charStack.top();
+            charStack.pop();
+
+            // Check if the closing parenthesis matches the corresponding opening parenthesis
+            if ((ch == ')' && top != '(') ||
+                (ch == '}' && top != '{') ||
+                (ch == ']' && top != '[')) {
+                return false;
+            }
+        }
+    }
+
+    // Expression is well-parenthesized if the stack is empty at the end
+    return charStack.empty();
 }
 
-char stackexp::pop()
-{
-    char s;
-    s=stk[top];
-    top=top-1;
-    return s;
-}
+int main() {
+    std::string inputExpression;
 
-int stackexp::isfull()
-{
-    if(top==size)
-	return 1;
-    else
-	return 0;
-}
+    // Input expression from the user
+    std::cout << "Enter an expression: ";
+    std::getline(std::cin, inputExpression);
 
-int stackexp::isempty()
-{
-    if(top==-1)
-	return 1;
-    else
-	return 0;
-}
+    // Check whether the expression is well-parenthesized
+    if (isWellParenthesized(inputExpression)) {
+        std::cout << "The entered expression is well-parenthesized." << std::endl;
+    } else {
+        std::cout << "The entered expression is not well-parenthesized." << std::endl;
+    }
 
-int main()
-{
-    stackexp s1;
-    char exp[20],ch;
-    int i=0;
-    cout << "\n\t!! Parenthesis Checker..!!!!" << endl; // prints !!!Hello World!!!
-    cout<<"\nEnter the expression to check whether it is in well form or not :  ";
-    cin>>exp;
-    if((exp[0]==')')||(exp[0]==']')||(exp[0]=='}'))
-    {
-	cout<<"\n Invalid Expression.....\n";
-	return 0;
-    }
-    else
-    {
-	while(exp[i]!='\0')
-	{
-	    ch=exp[i];
-	    switch(ch)
-	    {
-	    case '(':s1.push(ch);break;
-	    case '[':s1.push(ch);break;
-	    case '{':s1.push(ch);break;
-	    case ')':s1.pop();break;
-	    case ']':s1.pop();break;
-	    case '}':s1.pop();break;
-	    }
-	    i=i+1;
-	}
-    }
-    if(s1.isempty())
-    {
-	cout<<"\nExpression is well parenthesised...\n";
-    }
-    else
-    {
-	cout<<"\nSorry !!! Invalid Expression or not in well parenthesized....\n";
-    }
     return 0;
 }
-
-
-
