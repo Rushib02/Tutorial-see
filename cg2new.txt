@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+struct Point {
+    int x, y;
+};
+
+const int MAX_POINTS = 10;
+
+// Function to check if a point is inside the clip window
+bool inside(Point p, int xmin, int ymin, int xmax, int ymax) {
+    return (p.x >= xmin && p.x <= xmax && p.y >= ymin && p.y <= ymax);
+}
+
+// Function to compute the intersection of the line with the clip window
+Point computeIntersection(Point p1, Point p2, int xmin, int ymin, int xmax, int ymax) {
+    Point intersection;
+    double m = static_cast<double>(p2.y - p1.y) / (p2.x - p1.x);
+
+    if (p1.x < xmin) {
+        intersection.x = xmin;
+        intersection.y = static_cast<int>(p1.y + m * (xmin - p1.x));
+    } else if (p1.x > xmax) {
+        intersection.x = xmax;
+        intersection.y = static_cast<int>(p1.y + m * (xmax - p1.x));
+    } else if (p1.y < ymin) {
+        intersection.y = ymin;
+        intersection.x = static_cast<int>(p1.x + (1.0 / m) * (ymin - p1.y));
+    } else { // p1.y > ymax
+        intersection.y = ymax;
+        intersection.x = static_cast<int>(p1.x + (1.0 / m) * (ymax - p1.y));
+    }
+
+    return intersection;
+}
+
+// Function to perform Sutherland-Hodgman polygon clipping
+void sutherlandHodgman(Point polygon[], int &n, int xmin, int ymin, int xmax, int ymax) {
+    Point result[MAX_POINTS];
+    int k = 0;
+
+    for (int i = 0; i < n; i++) {
+        int next = (i + 1) % n;
+        if (inside(polygon[i], xmin, ymin, xmax, ymax)) {
+            if (!inside(polygon[next], xmin, ymin, xmax, ymax)) {
+                result[k++] = computeIntersection(polygon[i], polygon[next], xmin, ymin, xmax, ymax);
+            }
+            result[k++] = polygon[next];
+        } else if (inside(polygon[next], xmin, ymin, xmax, ymax)) {
+            result[k++] = computeIntersection(polygon[i], polygon[next], xmin, ymin, xmax, ymax);
+        }
+    }
+
+    // Update the original polygon with the clipped result
+    for (int i = 0; i < k; i++) {
+        polygon[i] = result[i];
+    }
+
+    n = k;
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of vertices in the polygon: ";
+    cin >> n;
+
+    Point polygon[MAX_POINTS];
+    cout << "Enter the vertices of the polygon (in clockwise order):" << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "Vertex " << i + 1 << ": ";
+        cin >> polygon[i].x >> polygon[i].y;
+    }
+
+    int xmin, ymin, xmax, ymax;
+    cout << "Enter the clip window coordinates (xmin ymin xmax ymax): ";
+    cin >> xmin >> ymin >> xmax >> ymax;
+
+    sutherlandHodgman(polygon, n, xmin, ymin, xmax, ymax);
+
+    cout << "Clipped polygon vertices:" << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "(" << polygon[i].x << ", " << polygon[i].y << ")" << endl;
+    }
+
+    return 0;
+}
